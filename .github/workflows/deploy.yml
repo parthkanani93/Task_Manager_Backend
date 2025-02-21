@@ -38,9 +38,9 @@ jobs:
           echo "EMAIL_FROM=${{ secrets.EMAIL_FROM }}" >> .env
           chmod 600 .env  # Secure file permissions
 
-      # Replace ${SERVER_URL} in openapi.yml with the live API URL
-      - name: Replace server URL in openapi.yml
-        run: sed -i 's|\${SERVER_URL}|${{ secrets.SERVER_URL }}|g' openapi.yml
+      # Replace ${SERVER_URL} in swagger.yaml with the live API URL
+      - name: Replace server URL in swagger.yaml
+        run: sed -i 's|\${SERVER_URL}|${{ secrets.SERVER_URL }}|g' swagger.yaml
 
       # Log environment (for debugging)
       - name: Show Environment Variables
