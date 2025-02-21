@@ -3,7 +3,7 @@ name: CI/CD to AWS Elastic Beanstalk
 on:
   push:
     branches:
-      - master  # Trigger on push to main branch
+      - master  # Trigger on push to master branch
 
 jobs:
   deploy:
@@ -29,6 +29,10 @@ jobs:
       #   run: npm test
       #   if: success()  # Only run if previous steps succeed
 
+      # Create a deployment package (ZIP)
+      - name: Create deployment package
+        run: zip -r deploy.zip . -x "*.git*" "node_modules/*" ".github/*"
+
       # Deploy to Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
@@ -38,5 +42,5 @@ jobs:
           application_name: my-node-app  # Replace with your EB app name
           environment_name: my-node-env  # Replace with your EB environment name
           version_label: ${{ github.sha }}  # Unique version based on commit SHA
-          region: us-east-1  # Replace with your region
-          deployment_package: .  # Deploy the root directory
+          region: us-east-1  # Replace with your AWS region
+          deployment_package: deploy.zip  # Use the correct ZIP file
