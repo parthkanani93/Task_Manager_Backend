@@ -7,7 +7,7 @@ info:
     email: support@taskapi.com
 
 servers:
-  - url: http://localhost:5000
+  - url: ${SERVER_URL}
     description: Development server
 
 components:

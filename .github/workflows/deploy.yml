@@ -36,11 +36,15 @@ jobs:
           echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
           echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env
           echo "EMAIL_FROM=${{ secrets.EMAIL_FROM }}" >> .env
+          chmod 600 .env  # Secure file permissions
 
-      # Run tests (optional; skip if you don’t have tests)
-      # - name: Run tests
-      #   run: npm test
-      #   if: success()  # Only run if previous steps succeed
+      # Replace ${SERVER_URL} in openapi.yml with the live API URL
+      - name: Replace server URL in openapi.yml
+        run: sed -i 's|\${SERVER_URL}|${{ secrets.SERVER_URL }}|g' openapi.yml
+
+      # Log environment (for debugging)
+      - name: Show Environment Variables
+        run: cat .env
 
       # Create a deployment package (ZIP)
       - name: Create deployment package
