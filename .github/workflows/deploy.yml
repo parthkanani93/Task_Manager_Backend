@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # Match your Node.js version
+          node-version: '22'  # Match your Node.js version
 
       # Install dependencies
       - name: Install dependencies
@@ -39,8 +39,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: my-node-app  # Replace with your EB app name
-          environment_name: my-node-env  # Replace with your EB environment name
+          application_name: Task_Manager_Backend  # Replace with your EB app name
+          environment_name: TaskManagerBackend-env  # Replace with your EB environment name
           version_label: "build-${{ github.run_number }}-${{ github.sha }}"
           region: us-east-1  # Replace with your AWS region
           deployment_package: deploy.zip  # Use the correct ZIP file
