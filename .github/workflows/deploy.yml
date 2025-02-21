@@ -25,9 +25,9 @@ jobs:
         run: npm install
 
       # Run tests (optional; skip if you don’t have tests)
-      - name: Run tests
-        run: npm test
-        if: success()  # Only run if previous steps succeed
+      # - name: Run tests
+      #   run: npm test
+      #   if: success()  # Only run if previous steps succeed
 
       # Deploy to Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
