@@ -1,0 +1,42 @@
+name: CI/CD to AWS Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Match your Node.js version
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Run tests (optional; skip if you don’t have tests)
+      - name: Run tests
+        run: npm test
+        if: success()  # Only run if previous steps succeed
+
+      # Deploy to Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: my-node-app  # Replace with your EB app name
+          environment_name: my-node-env  # Replace with your EB environment name
+          version_label: ${{ github.sha }}  # Unique version based on commit SHA
+          region: us-east-1  # Replace with your region
+          deployment_package: .  # Deploy the root directory
