@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Task = require('../models/Task');
 const { protect } = require('../middleware/auth');
 
@@ -129,8 +130,18 @@ router.put('/:id', protect, async (req, res) => {
 // @access  Private
 router.delete('/:id', protect, async (req, res) => {
   try {
-    const task = await Task.findById(req.params.id);
+    // Validate if the ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid task ID format' });
+    }
 
+    // First find the task
+    const task = await Task.findById(req.params.id);
+    
+    // Debug logs
+    console.log('Task to delete:', task);
+    console.log('User ID:', req.user.id);
+    
     // Check if task exists
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
@@ -141,15 +152,39 @@ router.delete('/:id', protect, async (req, res) => {
       return res.status(403).json({ message: 'User not authorized' });
     }
 
-    await Task.findByIdAndRemove(req.params.id);
+    // Use findOneAndDelete for better error handling
+    const deletedTask = await Task.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user.id
+    });
 
-    res.json({ message: 'Task removed' });
-  } catch (error) {
-    console.error(error);
-    if (error.kind === 'ObjectId') {
-      return res.status(404).json({ message: 'Task not found' });
+    // Verify deletion
+    if (!deletedTask) {
+      return res.status(404).json({ message: 'Task could not be deleted' });
     }
-    res.status(500).json({ message: 'Server error' });
+
+    res.json({ 
+      message: 'Task removed successfully',
+      data: deletedTask
+    });
+  } catch (error) {
+    // Improved error logging
+    console.error('Delete task error:', {
+      error: error.message,
+      stack: error.stack,
+      taskId: req.params.id,
+      userId: req.user?.id
+    });
+
+    // Handle specific error types
+    if (error.name === 'CastError' || error.kind === 'ObjectId') {
+      return res.status(400).json({ message: 'Invalid task ID format' });
+    }
+
+    res.status(500).json({ 
+      message: 'Server error while deleting task',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 
