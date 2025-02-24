@@ -10,8 +10,9 @@ require('dotenv').config();
 
 // Generate JWT
 const generateToken = (id) => {
+  const config = require('../config/config');
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '30d'
+    expiresIn: config.jwt.expire
   });
 };
 
