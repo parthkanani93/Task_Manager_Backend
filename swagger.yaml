@@ -68,26 +68,6 @@ components:
           format: password
           example: securePassword123
     
-    ForgotPasswordRequest:
-      type: object
-      required:
-        - email
-      properties:
-        email:
-          type: string
-          format: email
-          example: john@example.com
-    
-    ResetPasswordRequest:
-      type: object
-      required:
-        - password
-      properties:
-        password:
-          type: string
-          format: password
-          example: newSecurePassword123
-    
     Task:
       type: object
       required:
@@ -198,85 +178,6 @@ paths:
                 $ref: '#/components/schemas/UserResponse'
         '401':
           description: Invalid credentials
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /auth/forgot-password:
-    post:
-      tags:
-        - Authentication
-      summary: Forgot password
-      description: Initiates password reset process by sending email with reset link
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ForgotPasswordRequest'
-      responses:
-        '200':
-          description: Password reset email sent
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Password reset email sent
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /auth/reset-password/{token}:
-    post:
-      tags:
-        - Authentication
-      summary: Reset password
-      description: Resets user password using token received via email
-      parameters:
-        - name: token
-          in: path
-          required: true
-          description: Password reset token
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ResetPasswordRequest'
-      responses:
-        '200':
-          description: Password updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Password updated successfully
-        '400':
-          description: Token invalid or expired
           content:
             application/json:
               schema:
